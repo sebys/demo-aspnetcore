@@ -20,13 +20,16 @@ namespace demo_aspnetcore
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-        }
+        }   
 
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add configuration.
+            services.AddSingleton<IConfiguration>(Configuration);
+
             // Add framework services.
             services.AddMvc();
         }
@@ -37,6 +40,8 @@ namespace demo_aspnetcore
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // Call first to catch exceptions
+            // thrown in the following middleware.
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -49,8 +54,10 @@ namespace demo_aspnetcore
 
             app.UseMyMiddleware();
 
+            // Return static files and end pipeline.
             app.UseStaticFiles();
 
+            // Add MVC to the request pipeline.
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
