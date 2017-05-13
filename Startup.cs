@@ -47,6 +47,8 @@ namespace demo_aspnetcore
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseMyMiddleware();
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
